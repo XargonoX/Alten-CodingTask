@@ -3,13 +3,33 @@ from argparse import ArgumentParser
 import numpy
 
 
+def firstintervalIncludesSecondintervalSmaler(firstInterval, secondInterval):
+    return secondInterval.max() > firstInterval.min() and secondInterval.max() < firstInterval.max()
+
+def firstintervalIncludesSecondintervalGreater(firstInterval, secondInterval):
+    return secondInterval.min() > firstInterval.min() and secondInterval.min() < firstInterval.max()
+
+
 def merge(intervalList):
     """
     merges a list of Intervals
     :param intervalList: list of tuples
     :return: a list of Intervals
     """
-    pass
+    resultList = [intervalList[0]]
+    for inInterval in intervalList[1:]:
+        for resInterval in resultList:
+            if firstintervalIncludesSecondintervalSmaler(resInterval, inInterval):
+                resInterval[0] = inInterval.min()
+                break
+            elif firstintervalIncludesSecondintervalGreater(resInterval, inInterval):
+                resInterval[1] = inInterval.max()
+                break
+
+        else:
+            resultList.append(inInterval)
+    return resultList
+
 
 
 def readIntervalsFromFile(filePath,dataType):
@@ -44,8 +64,11 @@ if __name__ == "__main__":
     print(args.outputFilePath)
     print(args.dataType)
 
-    data = readIntervalsFromFile(args.inputFilePath, args.dataType)
-    writeIntervalsToFile(args.outputFilePath, data, args.dataType)
+    inputData = readIntervalsFromFile(args.inputFilePath, args.dataType)
+
+    resultData = merge(inputData)
+
+    writeIntervalsToFile(args.outputFilePath, resultData)
 
     print('finished!')
 
