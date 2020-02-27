@@ -46,11 +46,11 @@ if __name__ == "__main__":
     # define available arguments
     parser = ArgumentParser()
     parser.add_argument("-i", "--inputFile", dest="inputFilePath",
-                        help="path to input file", metavar="INPUTFILE")
+                        help="path to input file", metavar="INPUTFILEPATH", required=True)
     parser.add_argument("-o", "--outputFile", dest="outputFilePath",
-                        help="path to output file", metavar="OUTPUTFILE")
+                        help="path to output file", metavar="OUTPUTFILEPATH", required=True)
     parser.add_argument("-t", "--type", dest="dataType",
-                        help="used datatype (int or float)", metavar="DATATYPE")
+                        help="used datatype (int or float)", metavar="DATATYPE", default='int')
     args = parser.parse_args()
 
     #try to read data from given Filepath. If read failed, ask for new Filepath.
