@@ -3,34 +3,24 @@ from argparse import ArgumentParser
 from builtins import IOError, input
 import numpy
 
-
-def firstintervalIncludesSecondintervalSmaler(firstInterval, secondInterval):
-    return secondInterval.max() > firstInterval.min() and secondInterval.max() < firstInterval.max()
-
-def firstintervalIncludesSecondintervalGreater(firstInterval, secondInterval):
-    return secondInterval.min() > firstInterval.min() and secondInterval.min() < firstInterval.max()
-
-
 def merge(intervalList):
     """
     merges a list of Intervals
     :param intervalList: list of tuples
     :return: a list of Intervals
     """
-    resultList = [intervalList[0]]
-    for inInterval in intervalList[1:]:
+    resultList = [intervalList.pop(0)]
+    while len(intervalList) > 0:
+        inInterval = intervalList.pop(0)
         for resInterval in resultList:
-            if firstintervalIncludesSecondintervalSmaler(resInterval, inInterval):
-                resInterval[0] = inInterval.min()
+            intersection = range(max(resInterval.min(), inInterval.min()), min(resInterval.max(), inInterval.max()))
+            if intersection.start <= intersection.stop:  # intersection
+                resInterval[0] = min(resInterval.min(), inInterval.min())
+                resInterval[1] = max(resInterval.max(), inInterval.max())
                 break
-            elif firstintervalIncludesSecondintervalGreater(resInterval, inInterval):
-                resInterval[1] = inInterval.max()
-                break
-
         else:
             resultList.append(inInterval)
     return resultList
-
 
 
 def readIntervalsFromFile(filePath,dataType):
