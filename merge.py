@@ -1,5 +1,6 @@
 import sys
 from argparse import ArgumentParser
+from builtins import IOError, input
 import numpy
 
 
@@ -37,13 +38,14 @@ def readIntervalsFromFile(filePath,dataType):
     reads Intervals from the given file
     :param filePath: full path to file
     :return: list of tuples
+    :type return: [numpy.ndarray]
     """
     return numpy.genfromtxt(filePath, delimiter=',', dtype=dataType)
 
 
 def writeIntervalsToFile(outpuFilePath, data):
     """
-    writes the given data to into the given file
+    writes the given data into the given file
     :param outpuFilePath: full path to the File where the data should be stored
     :param data: data which should be written to the file
     :type data: ndarray
@@ -51,6 +53,7 @@ def writeIntervalsToFile(outpuFilePath, data):
     numpy.savetxt(outpuFilePath, data, fmt='%i', delimiter=',')
 
 if __name__ == "__main__":
+    # define available arguments
     parser = ArgumentParser()
     parser.add_argument("-i", "--inputFile", dest="inputFilePath",
                         help="path to input file", metavar="INPUTFILE")
@@ -60,15 +63,18 @@ if __name__ == "__main__":
                         help="used datatype (int or float)", metavar="DATATYPE")
     args = parser.parse_args()
 
-    print(args.inputFilePath)
-    print(args.outputFilePath)
-    print(args.dataType)
-
-    inputData = readIntervalsFromFile(args.inputFilePath, args.dataType)
+    #try to read data from given Filepath. If read failed, ask for new Filepath.
+    inputData = None
+    filePath = args.inputFilePath
+    while not inputData:
+        try:
+            inputData = readIntervalsFromFile(filePath, args.dataType)
+        except IOError as e:
+            print('Reading data from File failed, please input valid Path to Datafile: \n ->')
+            filePath = input()
 
     resultData = merge(inputData)
-
     writeIntervalsToFile(args.outputFilePath, resultData)
 
-    print('finished!')
+    print('wrote result successful to: {}'.format(args.outputFilePath))
 
